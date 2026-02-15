@@ -1,0 +1,96 @@
+{
+  "global": {
+    "writer_role": "EC実務者",
+    "ai_role": "補助・壁打ち・整理役",
+    "selling_tone": false,
+    "exaggeration": false,
+    "monetization_talk": false,
+    "stance_change": "forbidden"
+  },
+  "note": {
+    "display_name": "note",
+    "tone": {
+      "sentence_length": "medium",
+      "first_person": "allowed",
+      "emotional_words": "limited",
+      "assertiveness": "low"
+    },
+    "structure": {
+      "order": [
+        "experience",
+        "realization",
+        "reasoning"
+      ],
+      "conclusion_style": "open_ended"
+    },
+    "content_rules": {
+      "abstraction_level": "medium",
+      "technical_terms": "explain_briefly"
+    },
+    "forbid": [
+      "aggressive_claims",
+      "strong_calls_to_action"
+    ],
+    "reader_assumption": "AI初心者〜関心層",
+    "quality_check": "読後感：「売られていない」「押し付けられていない」"
+  },
+  "zenn": {
+    "display_name": "Zenn",
+    "tone": {
+      "sentence_length": "short",
+      "first_person": "optional",
+      "emotional_words": "forbidden",
+      "assertiveness": "high"
+    },
+    "structure": {
+      "order": [
+        "problem",
+        "approach",
+        "implementation",
+        "result"
+      ],
+      "conclusion_style": "clear_takeaway"
+    },
+    "content_rules": {
+      "abstraction_level": "low",
+      "technical_terms": "no_explanation_unless_needed"
+    },
+    "forbid": [
+      "storytelling",
+      "vague_phrases",
+      "motivational_language"
+    ],
+    "reader_assumption": "技術者・実務者",
+    "quality_check": "読後感：「仕組みが分かった」"
+  },
+  "x": {
+    "display_name": "X（スレッド）",
+    "tone": {
+      "sentence_length": "very_short",
+      "first_person": "optional",
+      "emotional_words": "minimal",
+      "assertiveness": "medium"
+    },
+    "structure": {
+      "order": [
+        "hook",
+        "insight",
+        "implication"
+      ],
+      "conclusion_style": "leave_space"
+    },
+    "content_rules": {
+      "abstraction_level": "high",
+      "technical_terms": "avoid"
+    },
+    "constraints": {
+      "max_characters_per_post": 120
+    },
+    "forbid": [
+      "detailed_explanations",
+      "conclusions_with_answers"
+    ],
+    "reader_assumption": "情報感度が高いが時間がない人",
+    "quality_check": "読後感：「続きが気になる」"
+  }
+}

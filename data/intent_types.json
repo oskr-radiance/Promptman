@@ -1,0 +1,43 @@
+{
+  "intent_types": {
+    "1": {
+      "id": "experience_focused",
+      "label": "体験共有型（実務ログ寄り）",
+      "description": "自分の経験・試行錯誤を淡々と共有する",
+      "suitable_for": ["note"],
+      "output_characteristics": {
+        "tone": "personal",
+        "focus": "what_happened",
+        "structure": "chronological"
+      }
+    },
+    "2": {
+      "id": "structure_focused",
+      "label": "設計・考え方整理型",
+      "description": "課題の構造・解決の仕組みを整理する",
+      "suitable_for": ["zenn"],
+      "output_characteristics": {
+        "tone": "analytical",
+        "focus": "how_it_works",
+        "structure": "logical"
+      }
+    },
+    "3": {
+      "id": "insight_focused",
+      "label": "問題提起・視点提供型",
+      "description": "気づきや視点を投げかけ、余韻を残す",
+      "suitable_for": ["x"],
+      "output_characteristics": {
+        "tone": "provocative",
+        "focus": "why_it_matters",
+        "structure": "open_ended"
+      }
+    }
+  },
+  "selection_prompt": "このテーマは、次のどれで進めるのが適切そうです。\nどれを採用しますか？",
+  "rules": {
+    "no_free_text": true,
+    "max_options": 3,
+    "no_recommendation": true
+  }
+}
