@@ -1,0 +1,7 @@
+[
+  {
+    "name": "delete-old-images",
+    "action": {"type": "Delete"},
+    "condition": {"keepCount": 3}
+  }
+]
