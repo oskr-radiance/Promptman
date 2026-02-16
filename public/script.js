@@ -17,23 +17,23 @@ let state = {
 async function submitTheme() {
     const media = document.querySelector('input[name="media"]:checked');
     const theme = document.getElementById('theme-input').value.trim();
-    
+
     // バリデーション
     if (!media) {
         alert('媒体を選択してください');
         return;
     }
-    
+
     if (!theme) {
         alert('テーマを入力してください');
         return;
     }
-    
+
     state.media = media.value;
     state.theme = theme;
-    
+
     showLoading();
-    
+
     try {
         const response = await fetch('../api/analyze.php', {
             method: 'POST',
@@ -43,17 +43,17 @@ async function submitTheme() {
                 theme: state.theme
             })
         });
-        
+
         const result = await response.json();
-        
+
         if (!result.success) {
             throw new Error(result.error || '意図解析に失敗しました');
         }
-        
+
         // 三択を表示
         showIntentOptions(result.data);
         showPhase(1);
-        
+
     } catch (error) {
         alert('エラー: ' + error.message);
     } finally {
@@ -67,10 +67,10 @@ async function submitTheme() {
 function showIntentOptions(data) {
     const container = document.getElementById('intent-options');
     const prompt = document.getElementById('selection-prompt');
-    
+
     prompt.textContent = data.selection_prompt;
     container.innerHTML = '';
-    
+
     Object.entries(data.options).forEach(([key, option]) => {
         const label = document.createElement('label');
         label.className = 'flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 transition';
@@ -90,16 +90,16 @@ function showIntentOptions(data) {
  */
 async function submitIntent() {
     const intent = document.querySelector('input[name="intent"]:checked');
-    
+
     if (!intent) {
         alert('方向性を選択してください');
         return;
     }
-    
+
     state.intentType = intent.value;
-    
+
     showLoading();
-    
+
     try {
         const response = await fetch('../api/generate.php', {
             method: 'POST',
@@ -109,20 +109,20 @@ async function submitIntent() {
                 structure_confirmed: false
             })
         });
-        
+
         const result = await response.json();
-        
+
         if (!result.success) {
             throw new Error(result.error || '構成生成に失敗しました');
         }
-        
+
         // 構成確認が必要
         if (result.data.needs_confirmation) {
             state.structure = result.data.structure;
             showStructurePreview(result.data.structure);
             showPhase(2);
         }
-        
+
     } catch (error) {
         alert('エラー: ' + error.message);
     } finally {
@@ -136,7 +136,7 @@ async function submitIntent() {
 function showStructurePreview(structure) {
     const container = document.getElementById('structure-preview');
     container.innerHTML = '<ol class="list-decimal list-inside space-y-2">';
-    
+
     structure.forEach(item => {
         const li = document.createElement('li');
         li.className = 'text-gray-800';
@@ -150,7 +150,7 @@ function showStructurePreview(structure) {
  */
 async function confirmStructure() {
     showLoading();
-    
+
     try {
         const response = await fetch('../api/generate.php', {
             method: 'POST',
@@ -160,17 +160,17 @@ async function confirmStructure() {
                 structure_confirmed: true
             })
         });
-        
+
         const result = await response.json();
-        
+
         if (!result.success) {
             throw new Error(result.error || 'プロンプト生成に失敗しました');
         }
-        
+
         state.executablePrompt = result.data.executable_prompt;
         showExecutablePrompt(result.data.executable_prompt);
         showPhase(3);
-        
+
     } catch (error) {
         alert('エラー: ' + error.message);
     } finally {
@@ -191,25 +191,43 @@ function showExecutablePrompt(prompt) {
  */
 async function copyPrompt() {
     const prompt = state.executablePrompt;
-    
+
+    if (!prompt) {
+        alert('コピーするプロンプトがありません');
+        return;
+    }
+
     try {
         await navigator.clipboard.writeText(prompt);
-        
+
         // フィードバック
-        const btn = event.target;
-        const originalText = btn.textContent;
-        btn.textContent = '✅ コピーしました！';
-        btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-        btn.classList.add('bg-green-600');
-        
-        setTimeout(() => {
-            btn.textContent = originalText;
-            btn.classList.remove('bg-green-600');
-            btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-        }, 2000);
-        
+        const btn = document.getElementById('copy-btn');
+        if (btn) {
+            const originalText = btn.textContent;
+            btn.textContent = '✅ コピーしました！';
+            btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            btn.classList.add('bg-green-600');
+
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.classList.remove('bg-green-600');
+                btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            }, 2000);
+        }
+
     } catch (error) {
-        alert('コピーに失敗しました: ' + error.message);
+        // clipboard API が使えない場合のフォールバック
+        try {
+            const textarea = document.createElement('textarea');
+            textarea.value = prompt;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('コピーしました！');
+        } catch (e) {
+            alert('コピーに失敗しました。プロンプトを手動で選択してコピーしてください。');
+        }
     }
 }
 
@@ -219,7 +237,7 @@ async function copyPrompt() {
 function showPhase(phaseNumber) {
     const phases = document.querySelectorAll('.phase-container');
     phases.forEach(phase => phase.classList.add('hidden'));
-    
+
     const targetPhase = document.getElementById(`phase-${phaseNumber}`);
     if (targetPhase) {
         targetPhase.classList.remove('hidden');
@@ -246,13 +264,13 @@ function resetAll() {
             structure: null,
             executablePrompt: null
         };
-        
+
         // フォームリセット
         document.getElementById('theme-input').value = '';
         document.querySelectorAll('input[type="radio"]').forEach(input => {
             input.checked = false;
         });
-        
+
         showPhase(0);
     }
 }

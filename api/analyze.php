@@ -50,19 +50,19 @@ if (!in_array($media, $allowedMedia)) {
 }
 
 try {
-    // 意図解析実行
+    // 意図解析 → 三択オプション生成
     $analyzer = new IntentAnalyzer();
-    $result = $analyzer->analyze($theme, $media);
-    
+    $result = $analyzer->analyzeForOptions($theme, $media);
+
     // セッションに保存
     $_SESSION['promptman'] = [
         'theme' => $theme,
         'media' => $media,
         'analysis_time' => time()
     ];
-    
+
     successResponse($result);
-    
+
 } catch (Exception $e) {
     errorResponse('意図解析に失敗しました: ' . $e->getMessage(), 500);
 }

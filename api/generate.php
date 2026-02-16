@@ -44,7 +44,7 @@ if (empty($input['intent_type'])) {
 }
 
 $intentType = trim($input['intent_type']);
-$structureConfirmed = isset($input['structure_confirmed']) ? (bool)$input['structure_confirmed'] : false;
+$structureConfirmed = isset($input['structure_confirmed']) ? (bool) $input['structure_confirmed'] : false;
 
 // セッションから情報取得
 $session = $_SESSION['promptman'];
@@ -55,15 +55,15 @@ try {
     // PromptBuilder 初期化
     $builder = new PromptBuilder();
     $analyzer = new IntentAnalyzer();
-    
+
     // 意図タイプの妥当性チェック
     if (!$analyzer->validateChoice($intentType)) {
         errorResponse('無効な意図タイプです');
     }
-    
-    // 構成案生成
-    $structure = $builder->generateStructure($media, $intentType);
-    
+
+    // 構成案を動的生成（テーマに応じてAIが最適化）
+    $structure = $analyzer->generateDynamicStructure($theme, $media, $intentType);
+
     // 構成確認が必要な場合
     if (!$structureConfirmed) {
         // 構成案のみ返す（Agentic 挙動）
@@ -75,7 +75,7 @@ try {
             'confirmation_message' => 'この構成で進めて良いですか？'
         ]);
     }
-    
+
     // 実行用プロンプト生成
     $executablePrompt = $builder->buildExecutablePrompt(
         $media,
@@ -83,13 +83,13 @@ try {
         $intentType,
         $structure
     );
-    
+
     // セッションに保存
     $_SESSION['promptman']['intent_type'] = $intentType;
     $_SESSION['promptman']['structure'] = $structure;
     $_SESSION['promptman']['executable_prompt'] = $executablePrompt;
     $_SESSION['promptman']['generated_at'] = time();
-    
+
     successResponse([
         'executable_prompt' => $executablePrompt,
         'media' => $media,
@@ -97,7 +97,7 @@ try {
         'structure' => $structure,
         'intent_type' => $intentType
     ]);
-    
+
 } catch (Exception $e) {
     errorResponse('プロンプト生成に失敗しました: ' . $e->getMessage(), 500);
 }
